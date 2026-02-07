@@ -1,0 +1,55 @@
+name: bicep-main-dev-deploy
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "**/*.bicep"
+      - "**/*.bicepparam"
+      - "bicepconfig.json"
+      - ".github/workflows/bicep-main-dev-deploy.yml"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+
+    env:
+      LOCATION: uksouth
+      MAIN_FILE: main.bicep
+      PARAMS_DEV: main.dev.bicepparam
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Lint + Build
+        run: |
+          set -euo pipefail
+          az bicep lint --file $MAIN_FILE
+          az bicep build --file $MAIN_FILE
+
+      # Optional: keep a what-if on main as a safety belt (prints changes in logs)
+      - name: What-if (dev)
+        run: |
+          az deployment sub what-if \
+            --location $LOCATION \
+            --template-file $MAIN_FILE \
+            --parameters @$PARAMS_DEV
+
+      - name: Deploy (dev)
+        run: |
+          az deployment sub create \
+            --name "dev-${{ github.run_id }}" \
+            --location $LOCATION \
+            --template-file $MAIN_FILE \
+            --parameters @$PARAMS_DEV

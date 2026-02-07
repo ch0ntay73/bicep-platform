@@ -1,0 +1,2 @@
+git add .github/workflows/bicep-pr.yml
+git commit -m "Add PR validation: bicep lint, build, what-if"

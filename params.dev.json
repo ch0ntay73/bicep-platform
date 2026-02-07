@@ -1,0 +1,17 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": { "value": "westeurope" },
+    "rgName": { "value": "rg-platform-dev" },
+    "vnetName": { "value": "vnet-platform-dev" },
+    "vnetAddressPrefix": { "value": "10.10.0.0/16" },
+    "subnetName": { "value": "default" },
+    "subnetPrefix": { "value": "10.10.1.0/24" },
+    "vmRgName": { "value": "rg-compute-dev" },
+    "vmName": { "value": "vm-dev-01" },
+    "nicName": { "value": "nic-dev-01" },
+    "vmSize": { "value": "Standard_B1s" },
+    "adminPassword": { "value": "ReplaceWithAStrongPassword123!" }
+  }
+}
